@@ -5,6 +5,7 @@ def is_airborne(physics):
 
 
 def apply_cursor_hit(physics, previous_cursor, cursor, dt: float, was_over: bool):
+    physics.cursor_hit_triggered = False
     physics.cursor_hit_cooldown_remaining = max(
         0.0,
         physics.cursor_hit_cooldown_remaining - max(dt, 0.0),
@@ -31,6 +32,7 @@ def apply_cursor_hit(physics, previous_cursor, cursor, dt: float, was_over: bool
     physics.velocity_x = (cursor[0] - previous_cursor[0]) / dt
     physics.velocity_y = (cursor[1] - previous_cursor[1]) / dt
     physics.cursor_hit_cooldown_remaining = physics.cursor_hit_cooldown
+    physics.cursor_hit_triggered = True
     return cursor_over
 
 

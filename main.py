@@ -132,6 +132,7 @@ def main():
     physics.set_position(x, y)
     Sparkle.set_position(x, y)
 
+    Sparkle.sounds.wait_until_ready()
     Sparkle.show()
 
     last_time = perf_counter()
@@ -147,7 +148,6 @@ def main():
 
         cursor = QCursor.pos()
         current_cursor = (cursor.x(), cursor.y())
-        Sparkle.update_animation(dt, *current_cursor)
         previous_cursor_position = (
             previous_cursor.x(),
             previous_cursor.y(),
@@ -176,7 +176,9 @@ def main():
             coordinate_scale,
             coordinate_origin,
         )
+        Sparkle.keyboard_controller.update(physics, dt)
         physics.update_physics(dt)
+        Sparkle.update_animation(dt, *current_cursor)
 
         Sparkle.set_position(
             round(physics.x),
@@ -185,7 +187,7 @@ def main():
 
     timer = QTimer()
     timer.timeout.connect(update)
-    timer.start(15)  # Update every 16 ms (~60 FPS)
+    timer.start(16)  # Update every 16 ms (~60 FPS)
 
     sys.exit(app.exec())
 

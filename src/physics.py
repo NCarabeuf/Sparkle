@@ -26,6 +26,11 @@ class Physics:
         self.support_rectangle = None
         self.cursor_hit_cooldown = 0.25
         self.cursor_hit_cooldown_remaining = 0.0
+        self.cursor_hit_triggered = False
+        self.landed_triggered = False
+        self.edge_hit_triggered = False
+        self.crush_triggered = False
+        self.crush_held = False
         self.is_dragging = False
 
     def set_position(self, x: float, y: float):
@@ -47,6 +52,8 @@ class Physics:
         return static.follow_support(self)
 
     def update_physics(self, dt: float):
+        self.landed_triggered = False
+        self.edge_hit_triggered = False
         if self.is_dragging:
             return
         if self.follow_support():
@@ -65,22 +72,30 @@ class Physics:
         self.y += self.velocity_y * dt
 
         if self.left_wall is not None and self.x <= self.left_wall:
+            self.edge_hit_triggered = self.velocity_x < 0
             self.x = self.left_wall
             self.velocity_x = -self.velocity_x
             self.velocity_x *= self.bounce_restitution
         elif self.right_wall is not None and self.x >= self.right_wall:
+            self.edge_hit_triggered = self.velocity_x > 0
             self.x = self.right_wall
             self.velocity_x = -self.velocity_x
             self.velocity_x *= self.bounce_restitution
 
         if self.ceiling_y is not None and self.y <= self.ceiling_y:
+            self.edge_hit_triggered |= self.velocity_y < 0
             self.y = self.ceiling_y
             self.velocity_y = -self.velocity_y
 
-        if self.floor_y is not None and self.y >= self.floor_y:
+        if (
+            self.floor_y is not None
+            and self.y >= self.floor_y
+        ):
+            landed = previous_y < self.floor_y
             self.y = self.floor_y
             self.velocity_x = 0.0
             self.velocity_y = 0.0
+            self.landed_triggered = landed
         elif falling:
             previous_bottom = previous_y + self.height
             current_bottom = self.y + self.height
@@ -121,5 +136,6 @@ class Physics:
                 self.y = landing_y - self.height
                 self.velocity_x = 0.0
                 self.velocity_y = 0.0
+                self.landed_triggered = True
                 self.support_hwnd = landing_platform[0]
                 self.support_offset_x = self.x - landing_platform[1]
