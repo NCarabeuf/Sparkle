@@ -46,15 +46,7 @@ SPARKLE_PERSONALITY = (
 
 
 def get_sparkle_font() -> QFont:
-    font_path = (
-        Path.home()
-        / "AppData"
-        / "Local"
-        / "Microsoft"
-        / "Windows"
-        / "Fonts"
-        / "minecraft_font.ttf"
-    )
+    font_path = get_asset("fonts/minecraft_font.ttf")
     font_id = QFontDatabase.addApplicationFont(str(font_path))
     if font_id == -1:
         raise RuntimeError(f"Impossible de charger la police Minecraft : {font_path}")
@@ -208,7 +200,7 @@ class ChatBubble(QWidget):
 
         self.answer_label = QTextBrowser(self)
         self.answer_label.setFont(self.sparkle_font)
-        self.answer_label.setPlainText("Écris-moi quelque chose...")
+        self.answer_label.setPlainText("Salut ! Je suis Sparkle, ton compagnon de bureau.")
         self.answer_label.setStyleSheet(
             "color: #202020; background: transparent; border: none;"
             " padding: 0;"
